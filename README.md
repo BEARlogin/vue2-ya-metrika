@@ -3,10 +3,10 @@
     <br>
     <br>
     <a href="https://badge.fury.io/js/vue2-ya-metrika">
-        <img src="https://badge.fury.io/js/vue-yandex-metrika.svg" />
+        <img src="https://badge.fury.io/js/vue2-ya-metrika.svg" />
     </a>
     <a href="https://www.npmjs.com/package/vue2-ya-metrika">
-        <img src="https://img.shields.io/npm/dm/vue-yandex-metrika.svg" />
+        <img src="https://img.shields.io/npm/dm/vue2-ya-metrika.svg" />
     </a>
 </p>
 
