@@ -38,5 +38,8 @@
     "microbundle": "^0.15.1",
     "vue": "2.7.14",
     "vue-router": "^3.6.5"
+  },
+  "repository": {
+    "url": "https://github.com/BEARlogin/vue2-ya-metrika"
   }
 }
