@@ -25,7 +25,7 @@
 ## And it will not crush your site, even browser cut out trackers!
 
 Inspired by vue-yandex-metrika package [https://github.com/vchaptsev/vue-yandex-metrika](https://github.com/vchaptsev/vue-yandex-metrika)
-
+and this issue https://github.com/vchaptsev/vue-yandex-metrika/issues/10
 
 ## Installation
 

@@ -41,5 +41,6 @@
   },
   "repository": {
     "url": "https://github.com/BEARlogin/vue2-ya-metrika"
-  }
+  },
+  "readme": "https://github.com/BEARlogin/vue2-ya-metrika#readme"
 }
