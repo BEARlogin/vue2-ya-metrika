@@ -1,6 +1,6 @@
 {
   "name": "vue2-ya-metrika",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Yandex Metrika Plugin for Vue2",
   "source": "src/index.js",
   "exports": {
