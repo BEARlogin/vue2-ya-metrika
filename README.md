@@ -2,18 +2,11 @@
     <img src="https://i.imgur.com/iu7VdZ7.png" />
     <br>
     <br>
-    <a href="https://badge.fury.io/js/vue-yandex-metrika">
+    <a href="https://badge.fury.io/js/vue2-ya-metrika">
         <img src="https://badge.fury.io/js/vue-yandex-metrika.svg" />
     </a>
-    <a href="https://www.npmjs.com/package/vue-yandex-metrika">
+    <a href="https://www.npmjs.com/package/vue2-ya-metrika">
         <img src="https://img.shields.io/npm/dm/vue-yandex-metrika.svg" />
-    </a>
-    <br>
-    <a href="https://travis-ci.org/vchaptsev/vue-yandex-metrika">
-        <img src="https://travis-ci.org/vchaptsev/vue-yandex-metrika.svg?branch=master" />
-    </a>
-    <a href='https://coveralls.io/github/vchaptsev/vue-yandex-metrika?branch=master'>
-        <img src='https://coveralls.io/repos/github/vchaptsev/vue-yandex-metrika/badge.svg?branch=master' />
     </a>
 </p>
 
