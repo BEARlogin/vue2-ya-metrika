@@ -1,16 +1,16 @@
 {
   "name": "vue2-ya-metrika",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Yandex Metrika Plugin for Vue2",
   "source": "src/index.js",
   "type": "module",
   "exports": {
-    "require": "./dist/lib.cjs",
-    "default": "./dist/lib.modern.js"
+    "require": "./dist/index.cjs",
+    "default": "./dist/index.modern.js"
   },
-  "main": "./dist/lib.cjs",
-  "module": "./dist/lib.module.js",
-  "unpkg": "./dist/lib.umd.js",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.module.js",
+  "unpkg": "./dist/index.umd.js",
   "author": "",
   "license": "ISC",
   "scripts": {
