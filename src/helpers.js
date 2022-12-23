@@ -22,6 +22,7 @@ export function getIsScriptInjected() {
 }
 
 const log = {
+
   warn(...args) {
     console.warn('[vue-yandex-metrika]', ...args);
   },

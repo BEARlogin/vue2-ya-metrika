@@ -3,12 +3,11 @@
   "version": "1.0.3",
   "description": "Yandex Metrika Plugin for Vue2",
   "source": "src/index.js",
-  "type": "module",
   "exports": {
     "require": "./dist/index.cjs",
     "default": "./dist/index.modern.js"
   },
-  "main": "./dist/index.cjs",
+  "main": "./dist/index.js",
   "module": "./dist/index.module.js",
   "unpkg": "./dist/index.umd.js",
   "author": "",
@@ -39,8 +38,5 @@
     "microbundle": "^0.15.1",
     "vue": "2.7.14",
     "vue-router": "^3.6.5"
-  },
-  "dependencies": {
-
   }
 }
