@@ -1,18 +1,19 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
+import { createLocalVue } from '@vue/test-utils';
 import VueYandexMetrika from '../index';
-import * as helpers from '../helpers';
-import {
-  getConfig, getIsScriptInjected, loadScript, resetConfig,
-} from '../helpers';
+import { MetrikaService } from '../MetrikaService';
 
-Vue.use(VueRouter);
+let localVue = createLocalVue();
+localVue.use(VueRouter);
+
+let metrika = new MetrikaService();
 
 const routes = [
   { name: 'main', path: '/init', component: { render: (h) => h('div') } },
   { name: 'test', path: '/test', component: { render: (h) => h('div') } },
 ];
-const router = new VueRouter({ mode: 'hash', routes });
+let router = new VueRouter({ mode: 'abstract', routes });
 
 // Yandex Metrika mock
 global.Ya = {
@@ -25,22 +26,38 @@ global.Ya = {
 
 describe('checkConfig', () => {
   beforeEach(() => {
+    localVue = createLocalVue();
     jest.clearAllMocks();
+    metrika = new MetrikaService();
   });
 
   it('should throw an error if the Metrika id is missing', () => {
     expect(() => {
-      Vue.use(VueYandexMetrika, {});
+      localVue.use(VueYandexMetrika, {});
     }).toThrowError();
   });
 
   it('manualMode notification', () => {
     global.Ya = undefined;
-    Vue.use(VueYandexMetrika, { id: 1 });
+    localVue.use(VueYandexMetrika, { id: 1 });
   });
 
-  it('tests inject metrika script', () => {
-    expect(getIsScriptInjected()).toBeTruthy();
+  it('should inject metrika script', () => {
+    global.Ya = undefined;
+    metrika.loadScript(jest.fn());
+    expect(metrika.getIsScriptInjected()).toBeTruthy();
+  });
+
+  it('should not inject metrika script', () => {
+    global.Ya = {
+      Metrika2: function Metrika2() {
+        return {
+          hit: jest.fn(),
+        };
+      },
+    };
+    metrika.loadScript(jest.fn());
+    expect(metrika.getIsScriptInjected()).toBeFalsy();
   });
 
   it('should not inject', () => {
@@ -52,96 +69,105 @@ describe('checkConfig', () => {
       },
     };
     const mock = jest.fn();
-    loadScript(mock);
-    expect(getIsScriptInjected()).toBeFalsy();
+    metrika.loadScript(mock);
+    expect(metrika.getIsScriptInjected()).toBeFalsy();
     expect(mock).toBeCalled();
   });
 
   it('should pass checkConfig', () => {
     expect(() => {
-      Vue.use(VueYandexMetrika, { id: 1, router });
+      localVue.use(VueYandexMetrika, { id: 1, router });
     }).not.toThrowError();
   });
 
   it('env by default', () => {
-    helpers.updateConfig({});
-    expect(getConfig().env).toBe('development');
+    metrika.updateConfig({});
+    expect(metrika.getConfig().env).toBe('development');
   });
 
   it('env from plugin options', () => {
-    helpers.updateConfig({ env: 'plugin' });
-    expect(getConfig().env).toBe('plugin');
+    metrika.updateConfig({ env: 'plugin' });
+    expect(metrika.getConfig().env).toBe('plugin');
   });
 });
 
 describe('tracking', () => {
   beforeEach(async () => {
-    resetConfig();
+    router = new VueRouter({ mode: 'abstract', routes });
+    metrika = new MetrikaService();
+    metrika.resetConfig();
     jest.clearAllMocks();
   });
 
   it('manualMode', () => {
-    helpers.updateConfig({ id: 1 });
-    const metrika = helpers.createMetrika(Vue);
-    helpers.startTracking(metrika);
+    metrika.updateConfig({ id: 1 });
+    const yandexMetrika = metrika.createMetrika(Vue);
+    metrika.startTracking(yandexMetrika);
   });
 
   it('debug', () => {
-    helpers.updateConfig({ id: 1, router, debug: true });
-    const metrika = helpers.createMetrika(Vue);
-    helpers.startTracking(metrika);
+    metrika.updateConfig({ id: 1, router, debug: true });
+    const yandexMetrika = metrika.createMetrika(Vue);
+    metrika.startTracking(yandexMetrika);
   });
 
-  it('development', () => {
-    helpers.updateConfig({
-      id: 1, router, debug: false, env: 'production',
+  it('development', async () => {
+    metrika.updateConfig({
+      id: 1, router, debug: false, env: 'development',
     });
-    const metrika = helpers.createMetrika(Vue);
-    helpers.startTracking(metrika);
+
+    const yandexMetrika = metrika.createMetrika(Vue);
+
+    jest.spyOn(MetrikaService, 'stubApiCall').mockImplementation(jest.fn);
+
+    metrika.startTracking(yandexMetrika);
+    await router.push('/init'); // init
+    await router.push('/test'); // should not tracked
+    expect(MetrikaService.stubApiCall).toBeCalledTimes(2);
   });
 
   it('skipSamePath', async () => {
-    helpers.updateConfig({ id: 1, router, env: 'production' });
-    const metrika = helpers.createMetrika(Vue);
-    helpers.startTracking(metrika);
+    metrika.updateConfig({ id: 1, router, env: 'production' });
+    const yandexMetrika = metrika.createMetrika(Vue);
+    metrika.startTracking(yandexMetrika);
     await router.push('/init'); // init
     await router.push('/init#samePath'); // triggers samePath
-    expect(metrika.hit).toBeCalledTimes(1);
+    expect(yandexMetrika.hit).toBeCalledTimes(1);
   });
 
   it('ignoreRoutes', async () => {
-    helpers.updateConfig({
+    metrika.updateConfig({
       id: 1, router, ignoreRoutes: ['test'], env: 'production',
     });
-    const metrika = helpers.createMetrika(Vue);
-    helpers.startTracking(metrika);
+    const yandexMetrika = metrika.createMetrika(Vue);
+    metrika.startTracking(yandexMetrika);
     await router.push('/init'); // init
     await router.push('/test'); // triggers ignoreRoutes
-    expect(metrika.hit).toBeCalledTimes(0);
+    expect(yandexMetrika.hit).toBeCalledTimes(1);
   });
 
   it('metrika.hit', async () => {
-    helpers.updateConfig({ id: 1, router, env: 'production' });
-    const metrika = helpers.createMetrika(Vue);
-    helpers.startTracking(metrika);
+    metrika.updateConfig({ id: 1, router, env: 'production' });
+    const yandexMetrika = metrika.createMetrika(Vue);
+    metrika.startTracking(yandexMetrika);
     await router.push('/init'); // init
     await router.push('/test'); // triggers hit
-    expect(metrika.hit).toBeCalledTimes(2);
+    expect(yandexMetrika.hit).toBeCalledTimes(2);
   });
 });
 
 describe('proxy', () => {
   it('tests metrika is undefined', () => {
     global.Ya = undefined;
-    helpers.updateConfig({ id: 1, env: 'production' });
-    const metrika = helpers.createMetrika(Vue);
-    helpers.startTracking(metrika);
+    metrika.updateConfig({ id: 1, env: 'production' });
+    const yandexMetrika = metrika.createMetrika(Vue);
+    metrika.startTracking(yandexMetrika);
   });
   it('tests counter exists already', () => {
     const counter = {};
-    helpers.updateConfig({ id: 1, env: 'production' });
+    metrika.updateConfig({ id: 1, env: 'production' });
     window.yaCounter1 = counter;
-    const metrika = helpers.createMetrika(Vue);
-    expect(metrika).toStrictEqual(window.yaCounter1);
+    const yandexMetrika = metrika.createMetrika(Vue);
+    expect(yandexMetrika).toStrictEqual(window.yaCounter1);
   });
 });
