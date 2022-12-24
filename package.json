@@ -15,7 +15,6 @@
   "scripts": {
     "build": "microbundle",
     "dev": "microbundle watch",
-    "prepare": "npm run build",
     "test": "jest"
   },
   "devDependencies": {
