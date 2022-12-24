@@ -8,12 +8,16 @@
     <a href="https://www.npmjs.com/package/vue2-ya-metrika">
         <img src="https://img.shields.io/npm/dm/vue2-ya-metrika.svg" />
     </a>
+    <a href="[![Coverage Status](https://coveralls.io/repos/github/BEARlogin/vue2-ya-metrika/badge.svg?branch=develop)](https://coveralls.io/github/BEARlogin/vue2-ya-metrika?branch=develop">
+        <img src="https://coveralls.io/repos/github/BEARlogin/vue2-ya-metrika/badge.svg?branch=develop" />
+    </a>
 </p>
+
 
 
 # Safe Vue Yandex Metrika
 
-**vue2-ya-metrika** allows you to send data about visited pages to [Yandex Metrika].
+**vue2-ya-metrika** allows you to send data about visited pages to [Yandex Metrika] and call its API methods.
 
 ## And it will not crush your site, even browser cut out trackers!
 
