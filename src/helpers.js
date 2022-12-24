@@ -24,22 +24,22 @@ export function getIsScriptInjected() {
 const log = {
 
   warn(...args) {
-    console.warn('[vue-yandex-metrika]', ...args);
+    console.warn('[vue2-ya-metrika]', ...args);
   },
   error(...args) {
-    console.error('[vue-yandex-metrika]', ...args);
+    console.error('[vue2-ya-metrika]', ...args);
   },
   log(...args) {
-    console.log('[vue-yandex-metrika]', ...args);
+    console.log('[vue2-ya-metrika]', ...args);
   },
 };
 
 export function checkConfig() {
   // Checks if config is valid
   if (typeof document === 'undefined') { return; }
-  if (!currentConfig.id) { throw new Error('[vue-yandex-metrika] Please enter a Yandex Metrika tracking ID'); }
+  if (!currentConfig.id) { throw new Error('[vue2-ya-metrika] Please enter a Yandex Metrika tracking ID'); }
   if (!currentConfig.router && currentConfig.env !== 'production') {
-    log.warn('[vue-yandex-metrika] Router is not passed, autotracking is disabled');
+    log.warn('[vue2-ya-metrika] Router is not passed, autotracking is disabled');
   }
 }
 
@@ -77,7 +77,12 @@ function resolveMetrika(init) {
   }
   return new Proxy(metrika, {
     get(target, prop) {
-      if (currentConfig.debug) { log.log(`method ${prop} is called with arguments ${arguments}`); }
+      if (currentConfig.env === 'development') {
+        return () => {
+          log.warn('You are in development mode. Api calls to Yandex Metrika will not be executed ');
+        };
+      }
+      if (currentConfig.debug && currentConfig.env === 'development') { log.log(`method ${prop} is called with arguments ${arguments}`); }
       if (target[prop]) {
         return target[prop];
       }

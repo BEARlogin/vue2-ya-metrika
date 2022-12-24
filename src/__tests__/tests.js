@@ -93,13 +93,15 @@ describe('tracking', () => {
   });
 
   it('development', () => {
-    helpers.updateConfig({ id: 1, router, debug: false });
+    helpers.updateConfig({
+      id: 1, router, debug: false, env: 'production',
+    });
     const metrika = helpers.createMetrika(Vue);
     helpers.startTracking(metrika);
   });
 
   it('skipSamePath', async () => {
-    helpers.updateConfig({ id: 1, router });
+    helpers.updateConfig({ id: 1, router, env: 'production' });
     const metrika = helpers.createMetrika(Vue);
     helpers.startTracking(metrika);
     await router.push('/init'); // init
@@ -108,7 +110,9 @@ describe('tracking', () => {
   });
 
   it('ignoreRoutes', async () => {
-    helpers.updateConfig({ id: 1, router, ignoreRoutes: ['test'] });
+    helpers.updateConfig({
+      id: 1, router, ignoreRoutes: ['test'], env: 'production',
+    });
     const metrika = helpers.createMetrika(Vue);
     helpers.startTracking(metrika);
     await router.push('/init'); // init
@@ -117,7 +121,7 @@ describe('tracking', () => {
   });
 
   it('metrika.hit', async () => {
-    helpers.updateConfig({ id: 1, router });
+    helpers.updateConfig({ id: 1, router, env: 'production' });
     const metrika = helpers.createMetrika(Vue);
     helpers.startTracking(metrika);
     await router.push('/init'); // init
