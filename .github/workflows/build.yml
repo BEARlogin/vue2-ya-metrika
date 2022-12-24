@@ -14,6 +14,9 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
       - run: npm ci
       - run: npm run test
+      - uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
   build:
     runs-on: ubuntu-latest
     environment: release
@@ -27,6 +30,7 @@ jobs:
       - run: git config user.name "Andrey Lugovskoy"
       - run: git config user.email "bearlogin@mail.ru"
       - run: npm ci
+      - run: npm version patch --force
       - run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}

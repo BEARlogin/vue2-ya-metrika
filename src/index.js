@@ -1,15 +1,14 @@
-/* istanbul ignore file */
-import {
-  updateConfig, checkConfig, loadScript, createMetrika, startTracking,
-} from './helpers';
+import { MetrikaService } from './MetrikaService';
 
 export default function install(Vue, options = {}) {
-  updateConfig(options); // Merge options and default config
+  const metrika = new MetrikaService();
 
-  checkConfig(); // Check if all required options are presented
+  metrika.updateConfig(options); // Merge options and default config
 
-  loadScript(() => { // Load Metrika script
-    const metrika = createMetrika(Vue); // Create Metrika
-    startTracking(metrika); // Start autotracking
+  metrika.checkConfig(); // Check if all required options are presented
+
+  metrika.loadScript(() => { // Load Metrika script
+    const yandexMetrika = metrika.createMetrika(Vue); // Create Metrika
+    metrika.startTracking(yandexMetrika); // Start autotracking
   }, options.scriptSrc);
 }

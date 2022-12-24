@@ -12,9 +12,14 @@ module.exports = {
     ecmaVersion: 'latest',
     sourceType: 'module',
   },
+  parser: '@typescript-eslint/parser',
   plugins: [
     'vue',
     'jest',
+    '@typescript-eslint',
+  ],
+  ignorePatterns: [
+    '**/*.ts',
   ],
   rules: {
     'jest/no-disabled-tests': 'warn',
@@ -25,5 +30,6 @@ module.exports = {
     'no-param-reassign': 'off',
     'prefer-rest-params': 'off',
     'no-console': 'off',
+    'import/prefer-default-export': 'off',
   },
 };
