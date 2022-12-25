@@ -20,5 +20,6 @@ const config = {
   debug: false,
   ignoreRoutes: [],
   skipSamePath: true,
+  onError: undefined,
 };
 export default config;

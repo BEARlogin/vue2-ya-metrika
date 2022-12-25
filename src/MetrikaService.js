@@ -1,16 +1,5 @@
 import config from './config';
-
-const log = {
-  warn(...args) {
-    console.warn('[vue2-ya-metrika]', ...args);
-  },
-  error(...args) {
-    console.error('[vue2-ya-metrika]', ...args);
-  },
-  log(...args) {
-    console.log('[vue2-ya-metrika]', ...args);
-  },
-};
+import { logger } from './logger';
 
 export class MetrikaService {
   constructor() {
@@ -39,7 +28,7 @@ export class MetrikaService {
     if (typeof document === 'undefined') { return; }
     if (!this.currentConfig.id) { throw new Error('[vue2-ya-metrika] Please enter a Yandex Metrika tracking ID'); }
     if (!this.currentConfig.router && this.currentConfig.env !== 'production') {
-      log.warn('[vue2-ya-metrika] Router is not passed, autotracking is disabled');
+      logger.warn('[vue2-ya-metrika] Router is not passed, autotracking is disabled');
     }
   }
 
@@ -67,8 +56,8 @@ export class MetrikaService {
   }
 
   static stubApiCall() {
-    log.warn('You are in development mode. Api calls to Yandex Metrika will not be executed ');
-    log.log(...arguments);
+    logger.warn('You are in development mode. Api calls to Yandex Metrika will not be executed ');
+    logger.log(...arguments);
   }
 
   resolveMetrika(init) {
@@ -88,7 +77,7 @@ export class MetrikaService {
     return new Proxy(metrika, {
       get(target, prop) {
         if (obj.currentConfig.debug) {
-          log.log(`Method ${prop} is called`);
+          logger.log(`Method ${prop} is called`);
         }
         if (obj.currentConfig.env === 'development') {
           return MetrikaService.stubApiCall;
@@ -97,14 +86,14 @@ export class MetrikaService {
           return target[prop];
         }
         return () => {
-          log.warn('Metrika script is not loaded');
+          logger.warn('Metrika script is not loaded');
         };
       },
     });
   }
 
   createMetrika(Vue) {
-    if (this.currentConfig.debug) { log.warn('DEBUG is true: you\'ll see all API calls in the console'); }
+    if (this.currentConfig.debug) { logger.warn('DEBUG is true: you\'ll see all API calls in the console'); }
 
     // Creates Metrika
     const metrika = this.resolveMetrika({

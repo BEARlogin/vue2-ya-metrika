@@ -3,6 +3,7 @@ import VueRouter from 'vue-router';
 import { createLocalVue } from '@vue/test-utils';
 import VueYandexMetrika from '../index';
 import { MetrikaService } from '../MetrikaService';
+import { logger } from '../logger';
 
 let localVue = createLocalVue();
 localVue.use(VueRouter);
@@ -15,14 +16,17 @@ const routes = [
 ];
 let router = new VueRouter({ mode: 'abstract', routes });
 
-// Yandex Metrika mock
-global.Ya = {
-  Metrika2: function Metrika2() {
-    return {
-      hit: jest.fn(),
-    };
-  },
-};
+function setGlobalYa(fn = jest.fn()) {
+  global.Ya = {
+    Metrika2: function Metrika2() {
+      return {
+        hit: fn,
+      };
+    },
+  };
+}
+
+setGlobalYa();
 
 describe('checkConfig', () => {
   beforeEach(() => {
@@ -49,25 +53,13 @@ describe('checkConfig', () => {
   });
 
   it('should not inject metrika script', () => {
-    global.Ya = {
-      Metrika2: function Metrika2() {
-        return {
-          hit: jest.fn(),
-        };
-      },
-    };
+    setGlobalYa();
     metrika.loadScript(jest.fn());
     expect(metrika.getIsScriptInjected()).toBeFalsy();
   });
 
   it('should not inject', () => {
-    global.Ya = {
-      Metrika2: function Metrika2() {
-        return {
-          hit: jest.fn(),
-        };
-      },
-    };
+    setGlobalYa();
     const mock = jest.fn();
     metrika.loadScript(mock);
     expect(metrika.getIsScriptInjected()).toBeFalsy();
@@ -88,6 +80,13 @@ describe('checkConfig', () => {
   it('env from plugin options', () => {
     metrika.updateConfig({ env: 'plugin' });
     expect(metrika.getConfig().env).toBe('plugin');
+  });
+
+  it('tests no exception if document is undefined', () => {
+    window.document = undefined;
+    expect(() => {
+      localVue.use(VueYandexMetrika, { id: 1, router });
+    }).not.toThrowError();
   });
 });
 
@@ -157,6 +156,27 @@ describe('tracking', () => {
 });
 
 describe('proxy', () => {
+  beforeEach(async () => {
+    metrika = new MetrikaService();
+    metrika.resetConfig();
+    jest.clearAllMocks();
+  });
+  it('tests metrika in global', () => {
+    window.yaCounter1 = undefined;
+    const fn = jest.fn();
+    setGlobalYa(fn);
+    metrika.updateConfig({ id: 1, env: 'production' });
+    const yandexMetrika = metrika.createMetrika(Vue);
+    yandexMetrika.hit();
+    window.yaCounter1.hit();
+    expect(fn).toBeCalledTimes(2);
+  });
+  it('tests metrika is undefined and hit', () => {
+    global.Ya = undefined;
+    metrika.updateConfig({ id: 1, env: 'production' });
+    const yandexMetrika = metrika.createMetrika(Vue);
+    expect(typeof yandexMetrika.hit).toEqual('function');
+  });
   it('tests metrika is undefined', () => {
     global.Ya = undefined;
     metrika.updateConfig({ id: 1, env: 'production' });
