@@ -26,8 +26,12 @@ export class MetrikaService {
   }
 
   checkConfig() {
-    if (typeof document === 'undefined') { return; }
-    if (!this.currentConfig.id) { throw new Error('[vue2-ya-metrika] Please enter a Yandex Metrika tracking ID'); }
+    if (typeof document === 'undefined') {
+      return;
+    }
+    if (!this.currentConfig.id) {
+      throw new Error('[vue2-ya-metrika] Please enter a Yandex Metrika tracking ID');
+    }
     if (!this.currentConfig.router && this.currentConfig.env !== 'production') {
       logger.warn('Router is not passed, autotracking is disabled');
     }
