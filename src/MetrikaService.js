@@ -1,5 +1,6 @@
 import config from './config';
 import { logger } from './logger';
+import { ErrorTypes } from './enums';
 
 export class MetrikaService {
   constructor() {
@@ -28,7 +29,7 @@ export class MetrikaService {
     if (typeof document === 'undefined') { return; }
     if (!this.currentConfig.id) { throw new Error('[vue2-ya-metrika] Please enter a Yandex Metrika tracking ID'); }
     if (!this.currentConfig.router && this.currentConfig.env !== 'production') {
-      logger.warn('[vue2-ya-metrika] Router is not passed, autotracking is disabled');
+      logger.warn('Router is not passed, autotracking is disabled');
     }
   }
 
@@ -60,6 +61,12 @@ export class MetrikaService {
     logger.log(...arguments);
   }
 
+  onError(type) {
+    if (typeof this.currentConfig.onError === 'function') {
+      this.currentConfig.onError(type);
+    }
+  }
+
   resolveMetrika(init) {
     let metrika = {};
     const counterId = `yaCounter${this.currentConfig.id}`;
@@ -70,6 +77,10 @@ export class MetrikaService {
 
     if (window.Ya?.Metrika2 !== undefined) {
       metrika = new window.Ya.Metrika2(init);
+    }
+
+    if (window.Ya?.Metrika2 === undefined) {
+      this.onError(ErrorTypes.SCRIPT_NOT_LOADED);
     }
 
     const obj = this;

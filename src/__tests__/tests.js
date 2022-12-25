@@ -4,6 +4,7 @@ import { createLocalVue } from '@vue/test-utils';
 import VueYandexMetrika from '../index';
 import { MetrikaService } from '../MetrikaService';
 import { logger } from '../logger';
+import { ErrorTypes } from '../enums';
 
 let localVue = createLocalVue();
 localVue.use(VueRouter);
@@ -160,9 +161,10 @@ describe('proxy', () => {
     metrika = new MetrikaService();
     metrika.resetConfig();
     jest.clearAllMocks();
+    global.Ya = undefined;
+    window.yaCounter1 = undefined;
   });
   it('tests metrika in global', () => {
-    window.yaCounter1 = undefined;
     const fn = jest.fn();
     setGlobalYa(fn);
     metrika.updateConfig({ id: 1, env: 'production' });
@@ -172,13 +174,13 @@ describe('proxy', () => {
     expect(fn).toBeCalledTimes(2);
   });
   it('tests metrika is undefined and hit', () => {
-    global.Ya = undefined;
     metrika.updateConfig({ id: 1, env: 'production' });
+    const spy = jest.spyOn(metrika, 'onError');
     const yandexMetrika = metrika.createMetrika(Vue);
     expect(typeof yandexMetrika.hit).toEqual('function');
+    expect(spy).toBeCalledWith(ErrorTypes.SCRIPT_NOT_LOADED);
   });
   it('tests metrika is undefined', () => {
-    global.Ya = undefined;
     metrika.updateConfig({ id: 1, env: 'production' });
     const yandexMetrika = metrika.createMetrika(Vue);
     metrika.startTracking(yandexMetrika);
